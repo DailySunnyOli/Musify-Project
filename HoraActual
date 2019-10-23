@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <pthread.h>
+#include <windows.h>
+
+void hora()
+{
+
+time_t tiempo = time(0);
+struct tm *hora = localtime(&tiempo);
+char output[50];
+strftime(output,50,"%H:%M",hora);
+printf("%s\n",output);
+}
+
+void horaActual()
+{
+    while(1)
+    {
+        system("cls");
+        hora();
+        Sleep(60000); ///Actualiza cada 1 minuto.
+
+    }
+
+}
+
+int main()
+{
+    horaActual();
+        return 0;
+}
