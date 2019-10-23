@@ -1,0 +1,400 @@
+#ifndef LIBUSUARIOS_H_INCLUDED
+#define LIBUSUARIOS_H_INCLUDED
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+#include "gotoxy.h" //por el menú
+
+#define arUsuarios "usuarios.dat"
+
+#define DIM 30
+typedef struct stUsuario
+{
+    int idUsuario;
+    int tipoUsuario; /// 1 para admin, 0 para usuario normal
+    char nombreUsuario[30];
+    char pass[20];
+    int anioNacimiento;
+    char genero;
+    char pais[20];
+    int playlist[50]; //Guarda los id de las canciones.
+    int cantidad; // Es el válidos de la playlist.
+    int eliminado;   // indica 1 o 0 si el cliente fue eliminado
+} stUsuario;
+
+//**FUNCIONES USUARIOS //////
+//** CARGA DE ARCIHVO DE USUARIOS////
+void cargaArchivoUsuario ();
+void guardarUsuario(stUsuario u);
+int verificacionDeUsuario (char nombre[20]);
+int verificacionDeContrasenia (char pass1[20], char pass2[20]);
+///int verificalegajos (char nombreUsuario[30], char password[30]); REVISAR FUNCION
+
+//** MUESTRA USUARIOS////
+void muestraUnUsuarioFORAdmin (stUsuario u);
+void mostrarUsuariosFORAdmin();
+
+//** MODIFICAR USUARIOS////
+void cambiarTipoUsuario (int registro);
+
+//** BUSQUEDA DE USUARIOS////
+int buscaUltIDUsuario ();
+stUsuario buscaUsuarioPorID (int id);
+stUsuario buscaUsuarioPorNombre (char nombre[]);
+
+//** OTRAS ////
+///stUsuario LogIn (); REVISAR FUNCION
+void menuUsuario (stUsuario u);
+
+#endif // LIBUSUARIOS_H_INCLUDED
+
+#include "libUsuarios.h"
+#include "libCanciones.h"
+
+
+//**FUNCIONES USUARIOS //////
+
+//** CARGA DE ARCIHVO DE USUARIOS////
+void cargaArchivoUsuario ()
+{
+    int flag1, flag2;
+    char nombreAux[20], pass1[20], pass2[20];
+    char opcion=0;
+    stUsuario u;
+    u.idUsuario = buscaUltIDUsuario();
+    if (u.idUsuario==-1)
+    {
+        u.tipoUsuario= 1;
+    }
+    else
+    {
+        u.tipoUsuario=0;   ///El primer usuario es forzosamente admin
+    }
+    do
+    {
+        system("cls");
+        printf("\n\t Carga los legajos ");
+        u.idUsuario++;
+        do
+        {
+            printf("\n nombre de usuario: ");
+            fflush(stdin);
+            gets(nombreAux);
+            flag1 = verificacionDeUsuario(nombreAux);
+            if (flag1 == 0)
+            {
+
+                strcpy(u.nombreUsuario, nombreAux);
+            }
+            else
+                printf("\nEL NOMBRE INGRESADO YA ESTA EN USO. ELIJA OTRO.");
+        }
+        while (flag1 != 0);
+        do
+        {
+            printf("\n Password: ");
+            fflush(stdin);
+            gets(pass1);
+            printf("\n Repita la password: ");
+            fflush(stdin);
+            gets(pass2);
+            flag2 = verificacionDeContrasenia(pass1, pass2);
+            if (flag2 ==1)
+            {
+                strcpy(u.pass, pass1);
+            }
+            else
+                printf("\nCONTRASEÑA INCORRECTA. VUELVA A ESCRIBIRLA");
+
+        }
+        while (flag2 !=1);
+        printf("\n Ingrese su año de nacimiento:");
+        scanf("%d", &u.anioNacimiento);
+        printf("\n Sexo F/M: ");
+        fflush(stdin);
+        scanf("%c", &u.genero);
+        u.genero= tolower(u.genero);
+        printf("\nPais: ");
+        fflush(stdin);
+        gets(u.pais);
+        u.eliminado=1;
+        guardarUsuario(u);
+        printf("Pulse ESC para salir;");
+        opcion = getch();
+    }
+    while (opcion != 27);
+
+}
+
+void guardarUsuario(stUsuario u)
+{
+    FILE *pArchUsuarios = fopen(arUsuarios,"ab");
+
+    if(pArchUsuarios != NULL)
+    {
+        fwrite(&u, sizeof(stUsuario),1, pArchUsuarios);
+        fclose(pArchUsuarios);
+    }
+}
+
+int verificacionDeUsuario (char nombre[20])
+{
+    stUsuario u;
+    int flag = 0;
+
+    FILE * pArchUsuario = fopen(arUsuarios, "rb");
+
+    if (pArchUsuario != NULL)
+    {
+
+        while (fread(&u, sizeof(stUsuario),1, pArchUsuario)>0)
+        {
+
+            if (strcmpi(u.nombreUsuario, nombre) ==0)
+            {
+                flag = 1;
+            }
+
+        }
+        fclose(pArchUsuario);
+    }
+    return flag;
+}
+
+int verificacionDeContrasenia (char pass1[20], char pass2[20])
+{
+
+    int flag = 0;
+
+    if (strcmpi(pass1, pass2) ==0)
+    {
+        flag = 1;
+    }
+
+    return flag;
+}
+
+/*
+stUsuario verificalegajos (char nombreUsuario[30], char password[30])
+{
+    stUsuario u;
+    int flag=1;
+
+    FILE*pArchiUsuario = fopen(arUsuarios, "rb");
+    if (pArchiUsuario!=NULL)
+    {
+        while (flag!=1 && (fread(&u, sizeof(stUsuario), 1, pArchiUsuario)>0))
+        {
+            if ((strcmpi (u.nombreUsuario, nombreUsuario)==0) && (strcmpi (u.pass, password)==0))
+            {
+                flag=1;
+            }
+
+        }
+    }
+    return u;
+}
+
+*/
+
+//** MUESTRA USUARIOS////
+void muestraUnUsuarioFORAdmin (stUsuario u)
+{
+
+    printf("\n Id_________________:%d\n ", u.idUsuario);
+    printf("\n Nombre_________________:%s\n ", u.nombreUsuario);
+    printf("\n Contrasenia_________________:%s\n ", u.pass);
+    printf("\n Año_________________:%d\n ", u.anioNacimiento);
+    printf("\n Sexo_________________:%c", u.genero);
+    printf("\n Pais_________________:%s\n ", u.pais);
+    if (u.eliminado==1)
+    {
+        printf("\n Estado de cuenta_________________:Activo");
+    }
+    else
+    {
+        printf("\n Estado de cuenta_________________:Eliminado");
+    }
+    if (u.tipoUsuario==1)
+    {
+        printf("\n Tipo de cuenta_________________:Administrador");
+    }
+    else
+    {
+        printf("\n Tipo de cuenta_________________:Usuario");
+    }
+    printf("\n\n\n");
+}
+
+void mostrarUsuariosFORAdmin ()
+{
+    stUsuario u;
+    system("cls");
+    FILE*pArchUsuario = fopen(arUsuarios, "rb");
+    if (pArchUsuario !=NULL)
+    {
+        while (fread(&u, sizeof(stUsuario), 1, pArchUsuario)>0)
+        {
+            muestraUnUsuarioFORAdmin(u);
+        }
+    }
+}
+
+//** MODIFICAR USUARIOS////
+void cambiarTipoUsuario (int registro) ///check with ids
+{
+    stUsuario u;
+    FILE*pArchiUsuarios = fopen(arUsuarios, "r+b");
+    if (pArchiUsuarios!=NULL)
+    {
+
+        fseek(pArchiUsuarios, sizeof(stUsuario)*registro, SEEK_SET);
+        fwrite(&u, sizeof(stUsuario)*registro, 1, pArchiUsuarios); ///not sure
+        u.tipoUsuario= 1; ///not sure either
+        fclose(pArchiUsuarios);
+    }
+
+}
+
+//** BUSQUEDA DE USUARIOS////
+int buscaUltIDUsuario ()
+{
+    stUsuario u;
+    int id = -1;
+    FILE *pArchUsuario = fopen(arUsuarios, "rb");
+
+    if (pArchUsuario != NULL)
+    {
+
+        fseek(pArchUsuario, sizeof (stUsuario) * -1, SEEK_END);
+        if (fread(&u, sizeof (stUsuario),1, pArchUsuario) >0)
+        {
+            id = u.idUsuario;
+        }
+        else
+        {
+            id=-1;
+        }
+        fclose(pArchUsuario);
+    }
+    return id;
+}
+
+stUsuario buscaUsuarioPorID (int id)
+{
+    stUsuario u;
+    int flag =0;
+    FILE * pArchUsuario = fopen(arUsuarios, "rb");
+
+    if (pArchUsuario != NULL)
+    {
+
+        while ((flag ==0) && (fread(&u, sizeof(stUsuario), 1, pArchUsuario) >0))
+        {
+
+            if (id == u.idUsuario)
+            {
+
+                flag =1;
+            }
+        }
+        fclose(pArchUsuario);
+
+    }
+    if (flag ==0)
+    {
+
+        u.idUsuario = -1;
+    }
+    return u;
+}
+
+stUsuario buscaUsuarioPorNombre (char nombre[]) ///revisar en el tp de la comision
+{
+    stUsuario u;
+    int flag =0;
+
+    FILE * pArchUsuario = fopen(arUsuarios, "rb");
+
+    if (pArchUsuario != NULL)
+    {
+
+        while ((flag ==0) && (fread(&u, sizeof(stUsuario), 1, pArchUsuario) >0))
+        {
+
+            if (strcmpi (nombre, u.nombreUsuario) == 0)
+            {
+
+                flag =1;
+            }
+        }
+        fclose(pArchUsuario);
+    }
+
+    return u;
+}
+
+//** OTRAS ////
+/*
+stUsuario LogIn ()  ///retorna tipo de usuario
+{
+    stUsuario u;
+    int verificacion;
+    int flag=0;
+
+    do
+    {
+        system("cls");
+        printf("\n\n\n\t\t\tEMPOWIFY-\n\n\t\t\t\t\tCANCIONES QUE EMPODERAN");
+        printf("\n\n                    °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°\n"); //25 espacios, 50 circulitos
+        printf("                    °                                                °"); //25 espacios, 1 circulito, 48 espacios, 1 circulito
+        printf("                              °                                                °"); //25 espacios, 1 circulito, 48 espacios, 1 circulito
+        printf("                              ° Usuario:                                       °\n                    °                                                °\n                    ° Contrasenia:                                   °");
+        printf("                              °                                                °");
+        printf("                              °                                                °");
+        printf("\n                    °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°\n");
+        gotoxy(34, 10);
+        gets(u.nombreUsuario);
+        gotoxy(38, 12);
+        gets(u.pass);
+        strcpy(u,verificalegajos(u.nombreUsuario, u.pass)); ///VOY A LLORAR
+        // gotoxy(38, 12);
+        //while () PARA MOSTRAR ASTERISCOS EN LUGAR DE CARACTERES
+        gotoxy(4, 18);
+        if (verificacion==0)
+        {
+            printf("El nombre o la contraseña son incorrectos, pruebe de nuevo");
+            system("pause");
+            flag=0;
+        }
+        else
+        {
+            flag=1;
+        }
+    }
+    while(flag==0);
+    return u;
+}
+*/
+
+void menuUsuario (stUsuario u)
+{
+
+    if (u.tipoUsuario==1)
+    {
+        printf("\n\tY AHORA?-");
+        printf("\n\t1.- AGREGAR UNA CANCION-");
+        printf("\n\t2.- MODIFICAR UNA CANCION-");
+        printf("\n\t3.- MODIFICAR TIPO DE USUARIO-");
+        printf("\n\t4.- DAR DE BAJA USUARIO-");
+    }
+    else if (u.tipoUsuario==0)
+    {
+        printf("\n\tY AHORA?-");
+        printf("\n\t1.- CREAR UNA PLAYLIST-");
+        printf("\n\t2.- AGREGAR UNA CANCION A LA PLAYLIST-");
+        printf("\n\t3.- ESCUCHAR UNA PLAYLIST-");
+        printf("\n\t4.- CONFIGURAR PERFIL-");
+    }
+}
