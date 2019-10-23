@@ -1,0 +1,31 @@
+#ifndef LIBPLAYLIST_H_INCLUDED
+#define LIBPLAYLIST_H_INCLUDED
+#include "libUsuarios.h"
+#include "libCanciones.h"
+/*AL INCLUIR LAS LIBRERIAS NO HACE ALTA VOLVER A ESPECIFICAR LAS ESTRUCTURAS */
+
+//** FUNCIONES CON PLAYLISTS////
+//int crearPlaylistUsuario(stUsuario u, int idCancion);
+void mostrarPlaylist (stUsuario u, stCancion canciones[], int valc);
+//void borrarPlaylistUsuario (int id);
+//void cambiarPlaylistUsuario(stUsuario u);
+//void borrarTODASlasPlaylists ();
+
+#endif // LIBPLAYLIST_H_INCLUDED
+
+
+#include "libPlaylist.h"
+
+//** FUNCIONES CON PLAYLISTS////
+void mostrarPlaylist (stUsuario u, stCancion canciones[], int valc)
+{
+    int i =0;
+    stCancion c;
+
+    for (i=0; i<u.cantidad; i++)
+    {
+
+        c=buscaCancionPorID(u.playlist[i]);
+        muestraUnaCancion(c);
+    }
+}
