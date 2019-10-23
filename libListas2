@@ -1,0 +1,182 @@
+#ifndef LIBLISTAS_H_INCLUDED
+#define LIBLISTAS_H_INCLUDED
+//#include "libarboles.h"
+
+typedef struct stnodo2
+{
+    int legajo;
+    char personaje[20];
+    char serie[20];
+    struct stnodo2* anterior;
+    struct stnodo2* siguiente;
+} stnodo2;
+
+
+///**FUNCIONES LISTA///
+
+stnodo2* inicLista2 ();
+stnodo2* crearNodo2 (int legajo, char personaje[20],char serie[20]);
+stnodo2* agregarPpio2 (stnodo2* lista2, stnodo2* NN);
+stnodo2* agregarenOrden2 (stnodo2* lista2, stnodo2* NN);
+stnodo2* agregarFinalLista2(stnodo2* lista2, stnodo2* NN);
+stnodo2* buscarUltimoLista2(stnodo2* lista2);
+void mostrarLista2 (stnodo2* lista2);
+void muestraUNOLista2 (stnodo2* nodo);
+stnodo2* BorrarNodo2(stnodo2* lista2, stnodo2* elemento); ///por legajo
+
+#endif // LIBLISTAS_H_INCLUDED
+
+
+#include "liblistas2.h"
+#include "windows.h"
+#include "libarboles.h"
+#include "stdio.h"
+
+///** FUNCIONES LISTAS DOBLES/////////////
+
+stnodo2* inicLista2()
+{
+    return NULL;
+}
+
+stnodo2* crearNodo2 (int legajo, char personaje[20], char serie[20])
+{
+    stnodo2* aux= (stnodo2*) malloc (sizeof(stnodo2));
+
+    aux->anterior=NULL;
+    aux->siguiente=NULL;
+    aux->legajo=legajo;
+    fflush(stdin);
+    strcpy(aux->personaje, personaje);
+    fflush(stdin);
+    strcpy(aux->serie,serie);
+
+    return aux;
+}
+
+stnodo2* agregarPpio2 (stnodo2* lista2, stnodo2* NN)
+{
+     if (lista2== NULL)
+    {
+        lista2=NN;
+    }
+    else
+    {
+        NN->siguiente= lista2;
+        lista2->anterior= NN;
+        lista2= NN;
+    }
+
+    return lista2;
+}
+
+stnodo2* agregarenOrden2 (stnodo2* lista2, stnodo2* NN)
+{
+    if (lista2== NULL)
+    {
+        lista2=NN;
+    }
+    else if (lista2->legajo> NN->legajo)
+    {
+        lista2=agregarPpio2(lista2, NN);
+    }
+    else
+    {
+        stnodo2* seguidora= lista2->siguiente;
+        stnodo2* anterior= lista2;
+
+        while ((seguidora!= NULL) && (seguidora->legajo<= NN->legajo))
+        {
+            anterior=seguidora;
+            seguidora= seguidora->siguiente;
+        }
+        anterior->siguiente= NN;
+        NN->anterior= anterior;
+        NN->siguiente=seguidora;
+
+        if (seguidora!=NULL)
+        {
+            seguidora->anterior= NN;
+        }
+    }
+    return lista2;
+}
+
+void mostrarlista2 (stnodo2* lista2)
+{
+    while (lista2!=NULL)
+    {
+        muestraUNOlista2(lista2);
+        lista2=lista2->siguiente;
+    }
+
+}
+
+void muestraUNOlista2 (stnodo2* nodo)
+{
+    printf("\nLegajo: %d", nodo->legajo);
+    printf("\npersonaje: %s", nodo->personaje);
+    printf("\nserie: %s", nodo->serie);
+    printf("\n");
+}
+
+stnodo2* BorrarNodo2(stnodo2* lista2, stnodo2* elemento) ///por legajo
+{
+    if (lista2!=NULL)
+    {
+        if(lista2->legajo == elemento->legajo)
+        {
+            stnodo2* eliminable=lista2; ///alojo la direccion
+            lista2= lista2->siguiente;
+            lista2->anterior = NULL;
+            free(eliminable); ///libero el espacio de memoria
+        }
+        else
+        {
+            stnodo2* seguidora=lista2->siguiente; ///seguidora
+            stnodo2* anterior=lista2;
+            while ((seguidora!=NULL)&& (seguidora->legajo != elemento->legajo))
+            {
+                anterior=seguidora; ///El anterior al elemento a borrar
+                seguidora=seguidora->siguiente;
+            }
+            anterior->siguiente= seguidora->siguiente; ///al anterior le asigno el siguiente del respaldo
+            if (seguidora!=NULL)
+            {
+                seguidora=seguidora->siguiente;
+                seguidora->anterior= anterior;
+
+            }
+             free(seguidora);
+
+        }
+
+    }
+    return lista2;
+}
+
+stnodo2* agregarFinalLista2(stnodo2* lista2, stnodo2* NN)
+{
+    if (lista2==NULL)
+        lista2=NN;
+    else
+    {
+        stnodo2* ultimo= buscarUltimoLista2(lista2);
+        ultimo->siguiente=NN;
+    }
+    return lista2;
+}
+
+stnodo2* buscarUltimoLista2(stnodo2* lista2)
+{
+    stnodo2* seguidora=lista2;
+    stnodo2* anterior=lista2;
+
+    while (seguidora!=NULL)
+    {
+        anterior=seguidora;
+        seguidora=seguidora->siguiente;
+    }
+
+    return anterior;
+}
