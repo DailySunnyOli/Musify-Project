@@ -1,0 +1,333 @@
+#ifndef LIBLISTAS_H_INCLUDED
+#define LIBLISTAS_H_INCLUDED
+
+typedef struct stnodo
+{
+    int legajo;
+    char personaje[20];
+    char serie[20];
+    struct stnodo* siguiente;
+} stnodo;
+
+
+///**FUNCIONES LISTAS SIMPLES///
+stnodo* inicLista();
+stnodo* crearNodo(int legajo, char personaje[20], char serie[20]);
+stnodo* agregarPpio (stnodo* lista, stnodo* NN);
+stnodo* agregarenOrden (stnodo* lista, stnodo* NN);
+stnodo* agregarFinalLista(stnodo* lista, stnodo* NN);
+stnodo* buscarUltimoLista(stnodo* lista);
+void mostrarlista (stnodo* lista);
+void muestraUNOlista (stnodo* nodo);
+stnodo* BorrarNodo(stnodo* lista, stnodo* elemento);
+stnodo* intercalarListas(stnodo* lista1, stnodo* lista2, stnodo* lista3);
+stnodo* invertirlista(stnodo* lista);
+stnodo* eliminarRepetidosLista(stnodo* lista);
+stnodo* unionLista(stnodo* listaA, stnodo* listaB, stnodo* listaC);
+stnodo* interseccionLista(stnodo* listaA, stnodo* listaB, stnodo* listaC);
+
+#endif // LIBLISTAS_H_INCLUDED
+
+
+#include "liblistas.h"
+#include "windows.h"
+#include "stdio.h"
+
+///** FUNCIONES LISTAS SIMPLES/////////////
+
+stnodo* inicLista()
+{
+    return NULL;
+}
+
+stnodo* crearNodo(int legajo, char personaje[20], char serie[20])
+{
+    stnodo* aux= (stnodo*) malloc (sizeof(stnodo));
+
+    aux->siguiente=NULL;
+    aux->legajo=legajo;
+    fflush(stdin);
+    strcpy(aux->personaje, personaje);
+    fflush(stdin);
+    strcpy(aux->serie,serie);
+
+    return aux;
+}
+
+stnodo* agregarPpio (stnodo* lista, stnodo* NN)
+{
+    if (lista== NULL)
+    {
+        lista=NN;
+    }
+    else
+    {
+        NN->siguiente= lista;
+        lista= NN;
+    }
+
+    return lista;
+}
+
+stnodo* agregarenOrden (stnodo* lista, stnodo* NN)
+{
+    if (lista== NULL)
+    {
+        lista=NN;
+    }
+    else if (lista->legajo> NN->legajo)
+    {
+        lista=agregarPpio(lista, NN);
+    }
+    else
+    {
+        stnodo* seguidora= lista->siguiente;
+        stnodo* anterior= lista;
+
+        while ((seguidora!= NULL) && (seguidora->legajo<= NN->legajo))
+        {
+            anterior=seguidora;
+            seguidora= seguidora->siguiente;
+        }
+        anterior->siguiente= NN;
+        NN->siguiente=seguidora;
+
+    }
+    return lista;
+}
+
+stnodo* agregarFinalLista(stnodo* lista, stnodo* NN)
+{
+    if (lista==NULL)
+        lista=NN;
+    else
+    {
+        stnodo* ultimo= buscarUltimoLista(lista);
+        ultimo->siguiente=NN;
+    }
+    return lista;
+}
+
+stnodo* buscarUltimoLista(stnodo* lista)
+{
+    stnodo* seguidora=lista;
+    stnodo* anterior=lista;
+
+    while (seguidora!=NULL)
+    {
+        anterior=seguidora;
+        seguidora=seguidora->siguiente;
+    }
+
+    return anterior;
+}
+
+void mostrarlista (stnodo* lista)
+{
+    while (lista!=NULL)
+    {
+        muestraUNOlista(lista);
+        lista=lista->siguiente;
+    }
+
+}
+
+void muestraUNOlista (stnodo* nodo)
+{
+    printf("\nLegajo: %d", nodo->legajo);
+    printf("\npersonaje: %s", nodo->personaje);
+    printf("\nserie: %s", nodo->serie);
+    printf("\n");
+}
+
+stnodo* BorrarNodo(stnodo* lista, stnodo* elemento) ///por legajo
+{
+    if (lista!=NULL)
+    {
+        if(lista->legajo == elemento->legajo)
+        {
+            stnodo* eliminable=lista; ///alojo la direccion
+            lista= lista->siguiente;
+            free(eliminable); ///libero el espacio de memoria
+        }
+        else
+        {
+            stnodo* seguidora=lista->siguiente; ///seguidora
+            stnodo* anterior=lista;
+            while ((seguidora!=NULL)&& (seguidora->legajo != elemento->legajo))
+            {
+                anterior=seguidora; ///El anterior al elemento a borrar
+                seguidora=seguidora->siguiente;
+            }
+            anterior->siguiente= seguidora->siguiente; ///al anterior le asigno el siguiente del respaldo
+            if (seguidora!=NULL)
+            {
+                free(seguidora);
+            }
+        }
+
+    }
+    return lista;
+}
+
+stnodo* intercalarListas(stnodo* lista1, stnodo* lista2, stnodo* lista3)
+{
+    while ((lista1!=NULL)&& (lista2!=NULL))
+    {
+        if (lista1->legajo < lista2->legajo)
+        {
+            stnodo*aux=lista1;
+            lista1=lista1->siguiente;
+            aux->siguiente=NULL;
+            lista3=agregarenOrden(lista3, aux);
+        }
+        else
+        {
+            stnodo*aux2=lista2; ///respaldo de la lista
+            lista2=lista2->siguiente; ///avanzo en la lista
+            aux2->siguiente=NULL; ///me deshago del siguiente a los demás elementos
+            lista3=agregarenOrden(lista3, aux2);
+        }
+    }
+
+    if (lista1!=NULL)
+    {
+        lista3=agregarenOrden(lista3,lista1);
+    }
+    else if (lista2!=NULL)
+    {
+        lista3=agregarenOrden(lista3, lista2);
+    }
+
+    return lista3;
+}
+
+stnodo* invertirlista(stnodo* lista) ///a medida que recorro, agrego al principio en otra lista
+{
+    stnodo* lista3=inicLista();
+    stnodo* aux;
+    if (lista!=NULL)
+    {
+        while (aux!=NULL)
+        {
+            aux=lista;
+            aux->siguiente=NULL; ///romper el siguiente
+            lista3=agregarPpio(lista3, aux);
+            lista=lista->siguiente;
+        }
+    }
+    return lista3;
+}
+
+stnodo* eliminarRepetidosLista(stnodo* lista)
+{
+    if (lista!=NULL)
+    {
+        stnodo* seguidora=lista;
+        stnodo* proximo=seguidora->siguiente;
+        while ((seguidora!=NULL) && (proximo!=NULL))
+        {
+            if (seguidora->legajo == proximo->legajo)
+            {
+                stnodo* aux;
+                aux=proximo;
+                proximo=proximo->siguiente;
+                seguidora->siguiente=proximo;
+                free(aux);
+            }
+            else
+            {
+                proximo=proximo->siguiente;
+                seguidora=seguidora->siguiente;
+            }
+        }
+    }
+    return lista;
+}
+
+stnodo* unionLista(stnodo* listaA, stnodo* listaB, stnodo* listaC)
+{
+    stnodo* seguidoraA=listaA;
+    stnodo* seguidoraB=listaB;
+    stnodo* aux;
+    while ((seguidoraA!=NULL) && (seguidoraB!=NULL))
+    {
+        if (seguidoraA->legajo<=seguidoraB->legajo)
+        {
+            if (seguidoraA->legajo==seguidoraB->legajo)
+            {
+                aux=crearNodo(seguidoraA->legajo, seguidoraA->personaje, seguidoraA->serie);
+                listaC=agregarenOrden(listaC, aux);
+                seguidoraA=seguidoraA->siguiente;
+                seguidoraB=seguidoraB->siguiente;
+            }
+            else
+
+            {
+                aux=crearNodo(seguidoraA->legajo, seguidoraA->personaje, seguidoraA->serie);
+                listaC=agregarenOrden(listaC, aux);
+                seguidoraA=seguidoraA->siguiente;
+            }
+
+        }
+        else
+        {
+            aux=crearNodo(seguidoraB->legajo, seguidoraB->personaje, seguidoraB->serie);
+            listaC=agregarenOrden(listaC, aux);
+            seguidoraB=seguidoraB->siguiente;
+
+        }
+
+    }
+    if (seguidoraA!=NULL)
+    {
+        while (seguidoraA!=NULL)
+        {
+            aux=crearNodo(seguidoraA->legajo, seguidoraA->personaje, seguidoraA->serie);
+            listaC=agregarenOrden(listaC, aux);
+            seguidoraA=seguidoraA->siguiente;
+        }
+
+    }
+    else if (seguidoraB!=NULL)
+    {
+        while (seguidoraB!=NULL)
+        {
+            aux=crearNodo(seguidoraB->legajo, seguidoraB->personaje, seguidoraB->serie);
+            listaC=agregarenOrden(listaC, aux);
+            seguidoraB=seguidoraB->siguiente;
+        }
+    }
+    return listaC;
+}
+
+stnodo* interseccionLista(stnodo* listaA, stnodo* listaB, stnodo* listaC)
+{
+    stnodo* segA=listaA;
+    stnodo* segB=listaB;
+    stnodo* auxiliar;
+
+    while ((segA!=NULL)&& (segB!=NULL))
+    {
+        if (segA->legajo<=segB->legajo)
+        {
+            if (segA->legajo==segB->legajo)
+            {
+                auxiliar=crearNodo(segA->legajo, segA->personaje, segA->serie);
+                listaC=agregarenOrden(listaC, auxiliar);
+                segA=segA->siguiente;
+                segB=segB->siguiente;
+            }
+            else
+            {
+                segA=segA->siguiente;
+
+            }
+        }
+        else if (segA->legajo>segB->legajo)
+        {
+            segB=segB->siguiente;
+        }
+    }
+    return listaC;
+}
