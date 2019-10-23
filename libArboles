@@ -1,0 +1,321 @@
+#ifndef LIBARBOLES_H_INCLUDED
+#define LIBARBOLES_H_INCLUDED
+
+typedef struct stnodoArbol
+{
+    int legajo;
+    char personaje[20];
+    char serie[20];
+    struct stnodoArbol *izq;
+    struct stnodoArbol *der;
+} stnodoArbol;
+
+
+///**FUNCIONES ARBOL///
+stnodoArbol* inicArbol();
+stnodoArbol* crearNodoA (int legajo, char personaje[20], char serie[20]);
+stnodoArbol* agregarA (stnodoArbol* A, stnodoArbol* NN);
+stnodoArbol* ArbolTransgenico (stnodoArbol*  A);
+void mostrarINorderA(stnodoArbol* A);
+void mostrarPREorderA(stnodoArbol* A);
+void mostrarPOSTorderA(stnodoArbol* A);
+int EShojaA (stnodoArbol* A);
+int sumarA (stnodoArbol* A);
+stnodoArbol* buscarNodo (stnodoArbol* A, int legajo);
+int cuentaElementos(stnodoArbol* A);
+int cuentaNiveles (stnodoArbol* A);
+stnodoArbol* buscarNodoXpersonaje (stnodoArbol* A, char personaje[]);
+
+#endif // LIBARBOLES_H_INCLUDED
+
+
+#include "windows.h"
+#include "libarboles.h"
+#include "stdio.h"
+stnodoArbol* inicArbol()
+{
+    return NULL;
+}
+
+stnodoArbol* crearNodoA (int legajo, char personaje[20], char serie[20])
+{
+    stnodoArbol* aux= (stnodoArbol*) malloc (sizeof(stnodoArbol));
+
+    aux->der=NULL;
+    aux->izq=NULL;
+    aux->legajo= legajo;
+    strcpy(aux->personaje, personaje);
+    fflush(stdin);
+    strcpy(aux->serie, serie);
+
+    return aux;
+}
+
+
+stnodoArbol* agregarA (stnodoArbol* A, stnodoArbol* NN)
+{
+    if (A==NULL)
+        A=NN;
+    else if (NN->legajo < A->legajo)
+    {
+        A->izq= agregarA(A->izq, NN);
+    }
+    else
+    {
+        A->der=agregarA(A->der, NN);
+    }
+
+    return A;
+}
+
+stnodoArbol* ArbolTransgenico (stnodoArbol*  A)
+{
+    stnodoArbol* aux;
+
+    aux=crearNodoA(5, "Phoebe Buffey", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(11, "Ursula Buffey", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(3, "Ross Geller", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(9, "Ross Wewereonabreak", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(1, "Monica Geller", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(6, "Chandler Bing", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(2, "Chanandler Bong", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(4, "Rachel Green", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(7, "Rachel Anyway", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(8, "Joey Tribbiani", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(0, "Janice OhmyGod", "friends");
+    A=agregarA(A, aux);
+
+    aux=crearNodoA(10, "Gunther Bartender", "friends");
+    A=agregarA(A, aux);
+
+    return A;
+
+}
+void muestraUNO (stnodoArbol* nodo)
+{
+    printf("\nLegajo: %d", nodo->legajo);
+    printf("\npersonaje: %s", nodo->personaje);
+    printf("\nserie: %s", nodo->serie);
+    printf("\n");
+}
+
+void mostrarINorderA(stnodoArbol* A)
+{
+    if (A!=NULL)
+    {
+        mostrarINorderA(A->izq);
+        muestraUNO(A);
+        mostrarINorderA(A->der);
+    }
+}
+
+void mostrarPREorderA(stnodoArbol* A)
+{
+    if (A!=NULL)
+    {
+        muestraUNO(A);
+        mostrarINorderA(A->izq);
+        mostrarINorderA(A->der);
+    }
+}
+
+void mostrarPOSTorderA(stnodoArbol* A)
+
+{
+    if (A!=NULL)
+    {
+        mostrarINorderA(A->izq);
+        mostrarINorderA(A->der);
+        muestraUNO(A);
+    }
+}
+
+int EShojaA (stnodoArbol* A)
+{
+    int rta=0;
+    if ((A->izq==NULL) && (A->der==NULL))
+    {
+        rta= 1;
+    }
+    return rta;
+}
+
+
+int sumarA (stnodoArbol* A)
+{
+    int rta=0;
+
+    if (A!=NULL)
+    {
+        rta=rta+sumarA(A->izq)+ sumarA(A->der)+A->legajo;
+    }
+    return rta;
+}
+
+
+
+stnodoArbol* buscarNodo (stnodoArbol* A, int legajo)
+{
+    stnodoArbol* respuesta= NULL;
+    if (A!=NULL)
+    {
+        if (A->legajo == legajo)
+        {
+            respuesta= A;
+        }
+        else if (A->legajo > legajo)
+        {
+            respuesta=buscarNodo(A->izq, legajo);
+        }
+        else if (A->legajo < legajo)
+        {
+            respuesta=buscarNodo(A->der, legajo);
+        }
+    }
+
+    return respuesta;
+}
+
+stnodoArbol* buscarNodoXpersonaje (stnodoArbol* A, char personaje[])
+{
+    stnodoArbol* respuesta= NULL;
+    if (A!=NULL)
+    {  if (strcmpi(A->personaje, personaje)== 0)
+        {
+            respuesta= A;
+        }
+        else if (respuesta == NULL)
+        {
+            respuesta=buscarNodoXpersonaje(A->izq, personaje);
+        }
+        else if (respuesta == NULL)
+        {
+            respuesta=buscarNodoXpersonaje(A->der, personaje);
+        }
+    }
+    return respuesta;
+}
+
+int cuentaElementos(stnodoArbol* A)
+{
+        int suma=0;
+
+    if (A!=NULL)
+    {
+        suma= suma+ cuentaElementos(A->izq) + cuentaElementos(A->der) + 1;
+    }
+
+    return suma;
+}
+
+int cuentaHojas (stnodoArbol* A)
+{
+    int suma=0;
+    if (A!= NULL)
+    {
+        suma=suma+ EShojaA(A)+ cuentaHojas(A->izq) + cuentaHojas(A->der);
+    }
+}
+
+int cuentaNiveles (stnodoArbol* A)
+{
+    int sumaIzq=0, sumaDer=0, rta=0;
+
+    if (A!= NULL)
+    {
+       sumaIzq= sumaIzq + 1 + cuentaNiveles(A->izq);
+       sumaDer= sumaDer + 1 + cuentaNiveles(A->der);
+    }
+
+    if (sumaIzq>sumaDer)
+    {
+        rta= sumaIzq;
+    }
+    else rta= sumaDer;
+
+
+    return rta;
+}
+
+stnodoArbol* nodoMasDerecho(stnodoArbol * arbol)
+{
+    stnodoArbol * aux;
+    if(arbol->der==NULL)
+    {
+        aux=arbol;
+    }
+    else
+    {
+        aux=nodoMasDerecho(arbol->der);
+    }
+    return aux;
+}
+
+stnodoArbol * nodoMasIzquierdo(stnodoArbol * arbol)
+{
+    stnodoArbol * aux;
+    if(arbol->izq==NULL)
+    {
+        aux=arbol;
+    }
+    else
+    {
+        aux=nodoMasIzquierdo(arbol->izq);
+    }
+    return aux;
+}
+
+
+stnodoArbol * borrarUnNodo(stnodoArbol * arbol, int legajo)
+{
+    if(arbol!=NULL)
+    {
+        if(legajo > arbol->legajo)
+        {
+            arbol->der=borrarUnNodo(arbol->der, legajo);
+        }
+        else if (legajo< arbol->legajo)
+        {
+            arbol->izq=borrarUnNodo(arbol->izq, legajo);
+        }
+        else
+        {
+            if(arbol->izq!=NULL)
+            {
+                arbol->legajo= (nodoMasDerecho(arbol->izq))->legajo;
+                arbol->izq=borrarUnNodo(arbol->izq, arbol->legajo);
+            }
+            else if(arbol->der!=NULL)
+            {
+                arbol->legajo=(nodoMasIzquierdo(arbol->der))->legajo;
+                arbol->der=borrarUnNodo(arbol->der, arbol->legajo);
+            }
+            else
+            {
+                free(arbol);
+                arbol=NULL;
+            }
+        }
+    }
+    return arbol;
+}
