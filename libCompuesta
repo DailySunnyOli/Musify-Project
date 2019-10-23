@@ -1,0 +1,245 @@
+#ifndef LIBCOMPUESTA_H_INCLUDED
+#define LIBCOMPUESTA_H_INCLUDED
+#include "liblistas2.h"
+#include "liblistas.h"
+#include "libarboles.h"
+
+typedef struct
+{
+    char serie[20];
+    stnodo2 * lista2;
+}stCeldaLista2;
+
+typedef struct
+{
+    char serie[20];
+    stnodoArbol * arbol;
+}stCeldaArbol;
+
+
+///* FUNCIONES LISTAS Y ARBOLES ////
+stnodo2* pasarArbol2Lista2(stnodoArbol* A, stnodo2* lista);
+
+///* FUNCIONES ARREGLOS DE LISTAS DOBLES////
+int altaArregloLista2 (stCeldaLista2 array[], char serie[20],char personaje[20],int legajo, int validos);
+int buscaPosserieArreglo (stCeldaLista2 array[],char serie[20],int validos);
+int agregarserieArregloLista2 (stCeldaLista2 array[],char serie[],int validos);
+int ingresarLegajoArregloLista2(stCeldaLista2 array[], int dim);
+int ingresarLegajoArregloLista2_HC(stCeldaLista2 array[], int dim);
+
+///* FUNCIONES ARREGLO DE ARBOLES //////
+
+int altaArregloArbol (stCeldaArbol array[], char serie[20],char personaje[20],int legajo, int validos);
+int buscaPosserieArregloArbol (stCeldaArbol array[],char serie[20],int validos);
+int agregarserieArregloArbol (stCeldaArbol array[],char serie[],int validos);
+int ingresarLegajoArregloArbol_HC(stCeldaArbol array[], int dim);
+#endif // LIBCOMPUESTA_H_INCLUDED
+
+#include "libcompuesta.h"
+#include "windows.h"
+#include "stdio.h"
+#include "liblistas.h"
+#include "liblistas2.h"
+#include "libarboles.h"
+
+#define arSeries "series.dat"
+
+///* FUNCIONES LISTAS Y ARBOLES ////
+stnodo2* pasarArbol2Lista2(stnodoArbol* A, stnodo2* lista) ///no ordena los primeros 3
+{
+    if (A!=NULL)
+    {
+        stnodo2* aux;
+        aux = crearNodo2(A->legajo, A->personaje, A->serie);
+        lista=agregarenOrden2(lista, aux); //el primero lo agrega, sabiendo que la lista esta vacia
+        lista= pasarArbol2Lista2(A->der, lista); ///le paso los menores
+        lista= pasarArbol2Lista2(A->izq, lista); ///le paso los mayores
+    }
+
+    return lista;
+}
+
+///* FUNCIONES ARREGLOS DE LISTAS ////
+int altaArregloLista2 (stCeldaLista2 array[], char serie[20],char personaje[20],int legajo, int validos)
+{
+    stnodo2 * aux= crearNodo2(legajo,personaje,serie);
+    int pos = buscaPosserieArreglo (array, serie, validos);
+
+    if (pos == -1)
+    {
+        validos = agregarserieArregloLista2(array, serie, validos);
+        pos = validos -1;
+    }
+    array[pos].lista2 = agregarenOrden2(array[pos].lista2,aux);
+
+    return validos;
+}
+
+int buscaPosserieArreglo (stCeldaLista2 array[],char serie[20],int validos)
+{
+    int rta = -1;
+    int i = 0;
+
+    while ((i<validos) && (rta ==-1))
+    {
+        if (strcmpi(array[i].serie,serie) ==0)
+        {
+            rta =i;
+        }
+        i++;
+    }
+    return rta;
+}
+
+int agregarserieArregloLista2 (stCeldaLista2 array[],char serie[],int validos)
+{
+    strcpy(array[validos].serie,serie);
+
+    array[validos].lista2 = inicLista2();
+
+    validos++;
+
+    return validos;
+}
+
+int ingresarLegajoArregloLista2(stCeldaLista2 array[], int dim)
+{
+    int legajo;
+    char personaje[20];
+    char serie[20];
+    char esc =0;
+    int validos =0;
+
+    while (esc != 27 && validos<dim)
+    {
+        printf("\nINGRESE serie: ");
+        fflush(stdin);
+        scanf("%s", &serie[20]);
+        printf("\nINGRESE LEGAJO: ");
+        scanf("%d", &legajo);
+        printf("\nINGRESE personaje: ");
+        fflush(stdin);
+        scanf("%s", &personaje[20]);
+        validos = altaArregloLista2(array,serie,personaje,legajo,validos);
+        printf("\nESC PARA FINALIZAR LA CARGA");
+        esc = getch();
+        system("cls");
+
+    }
+    return validos;
+}
+
+
+int ingresarLegajoArregloLista2_HC(stCeldaLista2 array[], int dim)
+{
+
+int validos=0;
+    validos= altaArregloLista2(array,"friends",  "Phoebe Buffey", 5, validos);
+
+    validos= altaArregloLista2(array, "glee",  "Blaine Anderson", 1, validos);
+
+    validos= altaArregloLista2(array,"friends",  "Rachel Green", 6, validos);
+
+    validos= altaArregloLista2(array, "glee",  "Rachel Berry", 8, validos);
+
+    validos= altaArregloLista2(array,"friends",  "Ross Geller", 3, validos);
+
+    return validos;
+}
+
+
+///* FUNCIONES ARREGLO DE ARBOLES //////
+
+int altaArregloArbol (stCeldaArbol array[], char serie[20],char personaje[20],int legajo, int validos)
+{
+    stnodoArbol * aux= crearNodoA(legajo,personaje,serie);
+    int pos = buscaPosserieArregloArbol(array, serie, validos);
+
+    if (pos == -1)
+    {
+        validos = agregarserieArregloArbol(array, serie, validos);
+        pos = validos -1;
+    }
+    array[pos].arbol = agregarA(array[pos].arbol,aux);
+
+    return validos;
+}
+
+int buscaPosserieArregloArbol (stCeldaArbol array[],char serie[20],int validos)
+{
+    int rta = -1;
+    int i = 0;
+
+    while ((i<validos) && (rta ==-1))
+    {
+        if (strcmpi(array[i].serie,serie) ==0)
+        {
+            rta =i;
+        }
+        i++;
+    }
+    return rta;
+}
+
+
+int agregarserieArregloArbol (stCeldaArbol array[],char serie[],int validos)
+{
+    strcpy(array[validos].serie,serie);
+
+    array[validos].arbol = inicArbol();
+
+    validos++;
+
+    return validos;
+}
+
+int ingresarLegajoArregloArbol_HC(stCeldaArbol array[], int dim)
+{
+
+    int validos =0;
+
+    validos= altaArregloArbol(array, "friends", "Phoebe Buffey", 5, validos);
+    validos= altaArregloArbol(array, "friends", "Rachel Green", 3, validos);
+    validos= altaArregloArbol(array, "friends", "Monica Geller", 7, validos);
+    validos= altaArregloArbol(array, "glee", "Rachel Berry", 6, validos);
+    validos= altaArregloArbol(array, "glee", "Quinn Fabray", 9, validos);
+
+    return validos;
+
+}
+/*
+///* FUNCIONES ARCHIVO Y LISTAS //////
+stnodo* cargarNodo_desde_Archivo(stnodo* lista) ///es un BUCLE DE CARGA que va agregando a la lista desde un archivo
+{
+
+    stnodo* nuevoNodo;
+    FILE* pArchi=fopen(series, "rb");
+    if (pArchi!=NULL)
+    {
+        while (fread(&legajo, sizeof(int), 1, pArchi)>0)
+        {
+            nuevoNodo=crearNodo(legajo);
+            list=AddStart(list, nuevoNodo);
+        }
+        fclose(pArchi);
+    }
+    return list;
+}
+
+stnodo* archi_A_list_ORDENADO(stnodo*list)
+{
+    int legajo;
+    stnodo* nuevoNodo;
+    FILE* pArchi=fopen("elementos", "rb");
+    if (pArchi!=NULL)
+    {
+        while (fread(&legajo, sizeof(int), 1, pArchi)>0)
+        {
+            nuevoNodo=crearNodo(legajo);
+            list=Add_In_Order(list, nuevoNodo);
+        }
+        fclose(pArchi);
+    }
+    return list;
+}
+*/
