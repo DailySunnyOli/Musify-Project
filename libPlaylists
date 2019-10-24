@@ -2,21 +2,55 @@
 #define LIBPLAYLIST_H_INCLUDED
 #include "libUsuarios.h"
 #include "libCanciones.h"
-/*AL INCLUIR LAS LIBRERIAS NO HACE ALTA VOLVER A ESPECIFICAR LAS ESTRUCTURAS */
+
+typedef struct stPlaylist
+{
+    int idPlaylist;
+    int idUsuario;
+    int idCancion;
+} stPlaylist;
 
 //** FUNCIONES CON PLAYLISTS////
-//int crearPlaylistUsuario(stUsuario u, int idCancion);
+int crearPlaylistUsuario(stUsuario u, int idCancion);
 void mostrarPlaylist (stUsuario u, stCancion canciones[], int valc);
-//void borrarPlaylistUsuario (int id);
-//void cambiarPlaylistUsuario(stUsuario u);
-//void borrarTODASlasPlaylists ();
+void borrarPlaylistUsuario (int id);
+void cambiarPlaylistUsuario(stUsuario u);
+void borrarTODASlasPlaylists ();
 
 #endif // LIBPLAYLIST_H_INCLUDED
-
 
 #include "libPlaylist.h"
 
 //** FUNCIONES CON PLAYLISTS////
+int crearPlaylistUsuario(stUsuario u, int idCancion) ///cargar arreglo playlist- FALLA DE FILTRO
+{
+    int confirmacion=0;
+    int flag;
+    flag=verificacionDeCancion(idCancion); ///ALGO DEBERIA RETORNAR LA CANCION ENTERA,, ASI PODEMOS FILTRAR POR ESTADO
+    FILE*pArchiUsuario  = fopen(arUsuarios,"r+b");
+    if (pArchiUsuario!=NULL)
+    {
+         printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR EL USUARIO? °\n");
+ printf("SI (1), NO(2): ");
+        scanf("%d",&confirmacion);
+        if (confirmacion==1 && flag==1)
+        {
+
+            u.playlist[u.cantidad] = idCancion;
+            u.cantidad++;
+            fseek(pArchiUsuario,sizeof(stUsuario)*u.idUsuario,SEEK_SET);
+            fwrite(&u,sizeof(stUsuario),1,pArchiUsuario);
+            printf( "\n\t ° PLAYLIST MODIFICADO CON EXITO- YAY!! °\n");
+        }
+        else
+        {
+            printf("\n\t ° UPSI!- SE HA PRODUCIDO UN ERROR °\n");
+        }
+        fclose(pArchiUsuario);
+    }
+    return u.cantidad;
+}
+
 void mostrarPlaylist (stUsuario u, stCancion canciones[], int valc)
 {
     int i =0;
@@ -29,3 +63,69 @@ void mostrarPlaylist (stUsuario u, stCancion canciones[], int valc)
         muestraUnaCancion(c);
     }
 }
+
+void borrarPlaylistUsuario (int id)
+{
+    stUsuario u;
+    FILE*pArchiUsuario = fopen(arUsuarios,"r+b");
+    if (pArchiUsuario!=NULL)
+    {
+        u=buscaUsuarioPorID(id);
+        if (id!=-1)
+        {
+
+            cambiarPlaylistUsuario(u);
+        }
+        else
+        {
+            printf("\n\t ° EL USUARIO NO EXISTE °\n");
+        }
+
+        fclose(pArchiUsuario);
+    }
+}
+
+void cambiarPlaylistUsuario(stUsuario u) ///AUX de Borrar Plalist Usuario
+{
+    int confirmacion=0;
+    FILE*pArchiUsuario  = fopen(arUsuarios,"r+b");
+    if (pArchiUsuario!=NULL)
+    {
+        printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR LA PLAYLIST? °\n");
+        printf("SI (1), NO(2): ");
+        scanf("%d",&confirmacion);
+        if (confirmacion==1)
+        {
+            u.cantidad=0;
+            fseek(pArchiUsuario,sizeof(stUsuario)*u.idUsuario,SEEK_SET);
+            fwrite(&u,sizeof(stUsuario),1,pArchiUsuario);
+            printf( "\n\t ° ESTADO MODIFICADO CON EXITO- YAY!! °\n");
+            muestraUnUsuarioFORAdmin(u);
+        }
+        else
+        {
+            printf("\n\t ° UPSI!- SE HA PRODUCIDO UN ERROR °\n");
+        }
+        fclose(pArchiUsuario);
+    }
+}
+
+
+void borrarTODASlasPlaylists ()
+{
+    int i=0;
+    //  stUsuario u;
+    int ultimo=buscaUltIDUsuario();
+    FILE* pArchiUsuario = fopen(arUsuarios, "r+b");
+    if (pArchiUsuario!=NULL)
+    {
+
+        for (i=0; i<ultimo; i++)
+        {
+            borrarPlaylistUsuario(i);
+        }
+        fclose(pArchiUsuario);
+    }
+}
+
+
