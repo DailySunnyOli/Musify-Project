@@ -1,6 +1,8 @@
 #ifndef LIBARBOLES_H_INCLUDED
 #define LIBARBOLES_H_INCLUDED
+#include "libCanciones.h"
 
+/*
 typedef struct stnodoArbol
 {
     int legajo;
@@ -9,6 +11,14 @@ typedef struct stnodoArbol
     struct stnodoArbol *izq;
     struct stnodoArbol *der;
 } stnodoArbol;
+*/
+
+typedef struct stnodoArbolCancion
+{
+    stCancion c;
+    struct nodoArbolCancion * izq;
+    struct nodoArbolCancion * der;
+} stnodoArbolCancion;
 
 
 ///**FUNCIONES ARBOL///
