@@ -10,7 +10,7 @@
 #define DIM 30
 #define ESC 27
 
-typedef struct
+typedef struct stCancion
 {
     int idCancion;
     char titulo[30];
@@ -23,8 +23,8 @@ typedef struct
     int eliminado;  /// indica 1 o 0 si la canción fue eliminada
 } stCancion;
 
-/**FUNCIONES CANCIONES *//////
-/** CARGA DE ARCHIVO DE CANCIONES*////
+//**FUNCIONES CANCIONES *//////
+//** CARGA DE ARCHIVO DE CANCIONES*////
 void cargaArchivoCancion ();
 void guardarCancion(stCancion c);
 int buscaUltIDCancion ();
@@ -36,12 +36,13 @@ void mostrarCanciones(stCancion canciones[], int valids);
 void muestraUnaCancionFORADMIN (stCancion c);
 void mostrarCancionesFORADMIN ();
 void mostrarCancionesArchi();
+
+///* FUNCIONES ARCHIVO A ARREGLO//////
+int Archi2ArrayCanciones (stCancion canciones[DIM], int valids);
 void mostrarCancionesArray (stCancion canciones[], int valids);
 void mostrarCancionesADMINArray (stCancion canciones[], int valids);
-int Archi2ArrayCanciones (stCancion canciones[DIM], int valids);
 
-
-//** ORDENAR CANCIONES////
+//** ORDENAR CANCIONES ARREGLO////
 void ordenarXTituloSelec (stCancion canciones[], int valids);
 int buscaMenorPosicionTitulo (stCancion canciones[], int valids, int inicio);
 
@@ -192,6 +193,7 @@ int verificacionDeCancion (int idCancion)  ///verifica que la cancion exista
     return flag;
 }
 
+
 ///** MUESTRA CANCIONES /////
 
 void muestraUnaCancion (stCancion c)
@@ -267,23 +269,6 @@ void mostrarCancionesArchi()
     }
 }
 
-void mostrarCancionesArray (stCancion canciones[], int valids)
-{
-    int i=0;
-    for (i=0; i<valids; i++)
-    {
-        muestraUnaCancion(canciones[i]);
-    }
-}
-
-void mostrarCancionesADMINArray (stCancion canciones[], int valids)
-{
-    int i=0;
-    for (i=0; i<valids; i++)
-    {
-        muestraUnaCancionFORADMIN(canciones[i]);
-    }
-}
 
 int Archi2ArrayCanciones (stCancion canciones[DIM], int valids)
 {
@@ -301,7 +286,24 @@ int Archi2ArrayCanciones (stCancion canciones[DIM], int valids)
     }
     return valids;
 }
+void mostrarCancionesArray (stCancion canciones[], int valids)
 
+{
+    int i=0;
+    for (i=0; i<valids; i++)
+    {
+        muestraUnaCancion(canciones[i]);
+    }
+}
+
+void mostrarCancionesADMINArray (stCancion canciones[], int valids)
+{
+    int i=0;
+    for (i=0; i<valids; i++)
+    {
+        muestraUnaCancionFORADMIN(canciones[i]);
+    }
+}
 
 //** ORDENAR CANCIONES////
 void ordenarXTituloSelec (stCancion canciones[], int valids)
@@ -493,7 +495,7 @@ void modificarTituloCancion (int id)
 
 void cambiarTitulo (stCancion c) ///AUX de Modificar Titulo
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
@@ -540,7 +542,7 @@ void modificarArtistaCancion (int id)
 
 void cambiarArtista (stCancion c)
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
@@ -588,12 +590,13 @@ void modificarGeneroCancion (int id)
 
 void cambiarGenero (stCancion c) ///AUX de Modificar genero
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
          printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR LA CANCION? °\n");
         printf("SI (1), NO(2): ");
+        scanf("%d", &confirmacion);
         if (confirmacion==1)
         {
             printf("\n °INGRESE GENERO_._._.: ");
@@ -634,12 +637,13 @@ void modificarAlbumCancion (int id)
 
 void cambiarAlbum (stCancion c) ///AUX de Modificar Album
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
          printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR LA CANCION? °\n");
- printf("SI (1), NO(2): ");
+        printf("SI (1), NO(2): ");
+        scanf("%d", &confirmacion);
         if (confirmacion==1)
         {
             printf("\n ° INGRESE ALBUM_._._.: ");
@@ -682,12 +686,13 @@ void modificarAnioCancion (int id)
 
 void cambiarAnio(stCancion c) ///AUX de Modificar Anio
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
          printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR LA CANCION? °\n");
- printf("SI (1), NO(2): ");
+        printf("SI (1), NO(2): ");
+        scanf("%d", &confirmacion);
         if (confirmacion==1)
         {
             printf("\n ° INGRESE ANIO_._._.: ");
@@ -728,12 +733,13 @@ void modificarComentarioCancion (int id)
 
 void cambiarComentario (stCancion c) ///AUX de Modificar Comentario
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
          printf("\n\t° ESTA SEGURO DE QUERER MODIFICAR LA CANCION? °\n");
  printf("SI (1), NO(2): ");
+ scanf("%d", &confirmacion);
         if (confirmacion==1)
         {
             printf("\n ° INGRESE COMENTARIO_._._.: ");
@@ -776,7 +782,7 @@ void modificarEstadoCancion (int id)
 
 void cambiarEstado (stCancion c) ///AUX de Modificar estado
 {
-    int confirmacion;
+    int confirmacion=0;
     FILE*pArchiCancion = fopen(arCanciones,"r+b");
     if (pArchiCancion!=NULL)
     {
@@ -862,7 +868,7 @@ void reproducirCancion (stCancion c)
 {
 
 system("cls");
-//char esc =0;
+char esc =0;
 system("color 57");
 
     gotoxy(30, 1);
@@ -981,6 +987,8 @@ system("color 57");
     printf("         Titulo: %s           Artista: %s         Duracion: %d\n\n", c.titulo, c.artista, c.duracion );
 }
 
+
+
 void cancionesRecomendadas(stCancion c)
 {
       FILE *pArchiCancion = fopen(arCanciones, "rb");
@@ -999,4 +1007,5 @@ if(pArchiCancion!=NULL){
 fclose(pArchiCancion);
 }
 }
+
 
