@@ -3,6 +3,16 @@
 #include <time.h>
 #include <pthread.h>
 #include <windows.h>
+#include <semaphore.h>
+#include "gotoxy.h"
+
+
+/** Prototipo para poder mostrar la hora y se pueda actualizar sin problemas
+    para poder utilizarla, al momento de hacer prints y demas se debe usar el semaforo 
+    mutex para que no hayan inconvenientes.                                         */
+
+
+sem_t mutex;
 
 void hora()
 {
@@ -10,7 +20,7 @@ void hora()
 time_t tiempo = time(0);
 struct tm *hora = localtime(&tiempo);
 char output[50];
-strftime(output,50,"%H:%M",hora);
+strftime(output,50,"%H:%M:%S",hora);
 printf("%s\n",output);
 }
 
@@ -18,16 +28,51 @@ void horaActual()
 {
     while(1)
     {
-        system("cls");
+        sem_wait(&mutex);
+        int x = whereX(), y = whereY();
+        gotoxy(30,0);
         hora();
-        Sleep(60000); ///Actualiza cada 1 minuto.
-
+        //Actualiza cada 1 minuto.
+        gotoxy(x, y);
+        sem_post(&mutex);
+        Sleep(10000);
     }
 
 }
 
+void printsMenu(){
+    Sleep(100);
+    sem_wait(&mutex);
+    gotoxy(0,3);
+    printf("texto1\n");
+    printf("texto2\n");
+    printf("texto3\n");
+    printf("texto4\n");
+    printf("texto5\n");
+    printf("texto6\n");
+
+    sem_post(&mutex);
+}
+
 int main()
 {
-    horaActual();
+    pthread_t reloj;
+    sem_init(&mutex, 0, 1);
+    pthread_create(&reloj, NULL, horaActual, NULL);
+
+    printsMenu();
+
+    //horaActual();
+
+   gotoxy(0,20);
+
+    sem_wait(&mutex);
+    printf("Inserte un numero: ");
+    int v;
+    scanf("%d", &v);
+    printf("\n El valor es de: %d", v);
+    sem_post(&mutex);
+
+    pthread_join(reloj, NULL);
         return 0;
 }
