@@ -18,8 +18,6 @@ typedef struct stUsuario
     int anioNacimiento;
     char genero;
     char pais[20];
-    int playlist[50]; //Guarda los id de las canciones.
-    int cantidad; // Es el válidos de la playlist.
     int eliminado;   // indica 1 o 0 si el cliente fue eliminado
 } stUsuario;
 
@@ -81,7 +79,6 @@ void cargaArchivoUsuario ()
     system("color 3B");
     int flag1, flag2;
     char nombreAux[20], pass1[20], pass2[20];
-    //  char opcion=0;
     stUsuario u;
     u.idUsuario = buscaUltIDUsuario();
     if (u.idUsuario==0)
@@ -141,7 +138,6 @@ void cargaArchivoUsuario ()
         fflush(stdin);
         gets(u.pais);
         u.eliminado=1;
-        u.cantidad=0;
         guardarUsuario(u);
 
 
@@ -189,7 +185,7 @@ int verificacionDeUsuario (char nombre[20])
 
 int verificacionDeContrasenia (char pass1[20], char pass2[20])
 {
-    //stUsuario u;
+
     int flag = 0;
 
     if (strcmpi(pass1, pass2) ==0)
@@ -238,7 +234,7 @@ void muestraUnUsuarioFORAdmin (stUsuario u)
     printf("\n º Anio_._._.:%d", u.anioNacimiento);
     printf("\n º Sexo_._._.:%c", u.genero);
     printf("\n º Pais_._._.:%s", u.pais);
-    printf("\n º Validos_._._.:%d", u.cantidad);
+
 
     if (u.eliminado==1)
     {
@@ -892,5 +888,3 @@ void menuUsuario (stUsuario u)
         printf("\n\t4.- CONFIGURAR PERFIL-");
     }
 }
-
-
