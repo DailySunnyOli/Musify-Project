@@ -7,10 +7,10 @@
 - Rodrigo- funciones para mejorar UI- (printeado de reloj)
 3. Semana del 4/11 - Modificancion de libreria cancion.
 -Daiana, Rodrigo - Modificancion y harcodeo de carga canciones al Archivo. 
--Daiana, ROdrigo - Modificacion de la estructura stCancion (se agrego mayor tamaño a los strings para los titulos de libros y podcast).
+-Daiana, Rodrigo - Modificacion de la estructura stCancion (se agrego mayor tamaño a los strings para los titulos de libros y podcast).
 -Melissa- perfeccionamiento del menú
 -Daiana- modificación librerías compuestas
-
+-Rodrigo- creacion de animacion de carga al inicio.
 Quedan
 - [ ] Funciones playlists
 - [ ] modificar funciones de manipulacion de canciones
