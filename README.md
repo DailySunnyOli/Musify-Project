@@ -11,6 +11,7 @@
 -Melissa- perfeccionamiento del menú
 -Daiana- modificación librerías compuestas
 -Rodrigo- creacion de animacion de carga al inicio.
+
 Quedan
 - [ ] Funciones playlists
 - [ ] modificar funciones de manipulacion de canciones
