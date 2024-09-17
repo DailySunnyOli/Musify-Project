@@ -20,6 +20,7 @@ typedef struct stCancion
     int anio;
     char genero[20];
     char comentario[100];
+    int tipo; ///1- Cancion, 2-Audiolibro, 3-Podcasts
     int eliminado;  /// indica 1 o 0 si la canción fue eliminada
 } stCancion;
 
@@ -95,6 +96,7 @@ void reproducirCancion (stCancion c);
 void cancionesRecomendadas(stCancion c);
 
 #endif // LIBCANCIONES_H_INCLUDED
+
 
 
 #include "libCanciones.h"
@@ -205,6 +207,20 @@ void muestraUnaCancion (stCancion c)
     printf("\n ° ANIO_._._._.:%d", c.anio);
     printf("\n ° GENERO_._._.:%s", c.genero);
     printf("\n ° COMENTARIO_.:%s", c.comentario);
+
+    if (c.tipo == 1)
+    {
+       printf("\n ° TIPO_._._._.: Cancion");
+    }
+    else if (c.tipo == 2)
+    {
+        printf("\n ° TIPO_._._._.: Audiolibro");
+    }
+    else if (c.tipo == 3)
+    {
+        printf("\n ° TIPO_._._._.: Podcast");
+    }
+
     printf("\n\n°°°°°°°°°°°°°°°°°°°°°°°\n\n");
 
 }
@@ -1007,5 +1023,3 @@ if(pArchiCancion!=NULL){
 fclose(pArchiCancion);
 }
 }
-
-
